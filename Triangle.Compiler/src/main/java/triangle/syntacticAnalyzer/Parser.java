@@ -31,14 +31,7 @@ import triangle.abstractSyntaxTrees.aggregates.MultipleRecordAggregate;
 import triangle.abstractSyntaxTrees.aggregates.RecordAggregate;
 import triangle.abstractSyntaxTrees.aggregates.SingleArrayAggregate;
 import triangle.abstractSyntaxTrees.aggregates.SingleRecordAggregate;
-import triangle.abstractSyntaxTrees.commands.AssignCommand;
-import triangle.abstractSyntaxTrees.commands.CallCommand;
-import triangle.abstractSyntaxTrees.commands.Command;
-import triangle.abstractSyntaxTrees.commands.EmptyCommand;
-import triangle.abstractSyntaxTrees.commands.IfCommand;
-import triangle.abstractSyntaxTrees.commands.LetCommand;
-import triangle.abstractSyntaxTrees.commands.SequentialCommand;
-import triangle.abstractSyntaxTrees.commands.WhileCommand;
+import triangle.abstractSyntaxTrees.commands.*;
 import triangle.abstractSyntaxTrees.declarations.ConstDeclaration;
 import triangle.abstractSyntaxTrees.declarations.Declaration;
 import triangle.abstractSyntaxTrees.declarations.FuncDeclaration;
@@ -327,6 +320,16 @@ public class Parser {
 			Command cAST = parseSingleCommand();
 			finish(commandPos);
 			commandAST = new WhileCommand(eAST, cAST, commandPos);
+		}
+			break;
+
+		case Token.REPEAT: {
+			acceptIt();
+			Command cAST = parseSingleCommand();
+			accept(Token.UNTIL);
+			Expression eAST = parseExpression();
+			finish(commandPos);
+			commandAST = new RepeatCommand(eAST, cAST, commandPos);
 		}
 			break;
 
