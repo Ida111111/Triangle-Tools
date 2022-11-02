@@ -291,6 +291,19 @@ public class Parser {
 					commandAST = new AssignCommand(vAST, eAST, commandPos);
 
 				}
+				if (currentToken.kind == Token.OPERATOR && currentToken.spelling.equals("--")) {
+					acceptIt();
+					IntegerLiteral il = new IntegerLiteral("1", commandPos);
+
+					IntegerExpression ie = new IntegerExpression(il, commandPos);
+					VnameExpression vne = new VnameExpression(vAST, commandPos);
+					Operator op = new Operator("-", commandPos);
+					Expression eAST = new BinaryExpression(vne, op, ie, commandPos);
+					finish(commandPos);
+
+					commandAST = new AssignCommand(vAST, eAST, commandPos);
+
+				}
 				else {
 					accept(Token.BECOMES);
 					Expression eAST = parseExpression();
