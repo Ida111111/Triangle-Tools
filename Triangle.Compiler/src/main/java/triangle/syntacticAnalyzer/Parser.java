@@ -280,7 +280,6 @@ public class Parser {
 
 				if (currentToken.kind == Token.OPERATOR && currentToken.spelling.equals("++")) {
 					acceptIt();
-
 					IntegerLiteral il = new IntegerLiteral("1", commandPos);
 
 					IntegerExpression ie = new IntegerExpression(il, commandPos);

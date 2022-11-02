@@ -3,6 +3,6 @@ let
 in
 begin
  a := 0;
- a++;
+ a := a - 1;
  putint(a);
 end
