@@ -154,8 +154,10 @@ public class LayoutVisitor implements ActualParameterVisitor<Void, DrawingTree>,
 	}
 
 	@Override
-	public DrawingTree visitRepeatCommand(RepeatCommand repeatCommand, Void obj) {
-		return null;
+	public DrawingTree visitRepeatCommand(RepeatCommand ast, Void obj) {
+		var d1 = ast.E.visit(this);
+		var d2 = ast.C.visit(this);
+		return layoutBinary("RepeatCom.", d1, d2);
 	}
 
 	// Expressions
