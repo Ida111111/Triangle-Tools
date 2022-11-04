@@ -40,9 +40,12 @@ public class Compiler {
 	static String objectName;
 
 	@Argument(alias = "tree", description = "If to output tree", required = false)
-	static boolean showTree = false;
+	static boolean show1Tree = false;
 
-	@Argument(alias = "folding", description = "The folding ????", required = false)
+	@Argument(alias = "tree2", description = "If to output folding tree", required = false)
+	static boolean show2Tree = false;
+
+	@Argument(alias = "folding", description = "The folding", required = false)
 	static boolean folding = false;
 
 	private static Scanner scanner;
@@ -61,15 +64,16 @@ public class Compiler {
 	 *
 	 * @param sourceName   the name of the file containing the source program.
 	 * @param objectName   the name of the file containing the object program.
-	 * @param showingAST   true iff the AST is to be displayed after contextual
+	 * @param showingAST  true if the AST is to be displayed after contextual
 	 *                     analysis
-	 * @param showingTable true iff the object description details are to be
+	 * @param folding	   true if call also runs folding
+	 * @param showingTable true if the object description details are to be
 	 *                     displayed during code generation (not currently
 	 *                     implemented).
-	 * @return true iff the source program is free of compile-time errors, otherwise
+	 * @return true if the source program is free of compile-time errors, otherwise
 	 *         false.
 	 */
-	static boolean compileProgram(String sourceName, String objectName, boolean showingAST, boolean showingTable) {
+	static boolean compileProgram(String sourceName, String objectName, boolean showingAST, boolean folding, boolean showingTable) {
 
 		System.out.println("********** " + "Triangle Compiler (Java Version 2.1)" + " **********");
 
@@ -92,16 +96,15 @@ public class Compiler {
 		// scanner.enableDebugging();
 		theAST = parser.parseProgram(); // 1st pass
 		if (reporter.getNumErrors() == 0) {
-			// if (showingAST) {
-			// drawer.draw(theAST);
-			// }
+
 			System.out.println("Contextual Analysis ...");
 			checker.check(theAST); // 2nd pass
-			if (showingAST) {
-				drawer.draw(theAST);
-			}
+
 			if (folding) {
 				theAST.visit(new ConstantFolder());
+			}
+			if (showingAST) {
+				drawer.draw(theAST);
 			}
 			
 			if (reporter.getNumErrors() == 0) {
@@ -136,18 +139,15 @@ public class Compiler {
 		}*/
 
 		String[] unparsed = Args.parseOrExit(Compiler.class, args).toArray(new String[3]);
-		/*System.out.println("That's the unparsed string:");
-		System.out.println("...............................................");
-		System.out.println(unparsed);
-		System.out.println("...............................................");
-		System.out.println("unparsed string end");
-		//parseArgs(unparsed);*/
 
 		String sourceName = args[0];
 
-		var compiledOK = compileProgram(sourceName, objectName, showTree, false);
+		var compiledOK = compileProgram(sourceName, objectName, show1Tree, folding, false);
+		if (show2Tree) { // draw folded or not folded? -> draw the one not drawn yet
+			var compileFold = compileProgram(sourceName, objectName, show1Tree, !folding, false);
+		}
 
-		if (!showTree) {
+		if (!show1Tree) {
 			System.exit(compiledOK ? 0 : 1);
 		}
 	}
@@ -156,7 +156,7 @@ public class Compiler {
 		for (String s : args) {
 			var sl = s.toLowerCase();
 			if (sl.equals("tree")) {
-				showTree = true;
+				show1Tree = true;
 			} else if (sl.startsWith("-o=")) {
 				objectName = s.substring(3);
 			} else if (sl.equals("folding")) {
