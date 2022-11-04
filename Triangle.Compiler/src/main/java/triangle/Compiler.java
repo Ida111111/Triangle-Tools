@@ -14,6 +14,8 @@
 
 package triangle;
 
+import com.sampullara.cli.Args;
+import com.sampullara.cli.Argument;
 import triangle.abstractSyntaxTrees.Program;
 import triangle.codeGenerator.Emitter;
 import triangle.codeGenerator.Encoder;
@@ -33,9 +35,14 @@ import triangle.treeDrawer.Drawer;
 public class Compiler {
 
 	/** The filename for the object program, normally obj.tam. */
-	static String objectName = "obj.tam";
-	
+
+	@Argument(alias = "-o", description = "Regular expression to parse lines", required = true)
+	static String objectName;
+
+	@Argument(alias = "tree", description = "If to output tree", required = false)
 	static boolean showTree = false;
+
+	@Argument(alias = "folding", description = "The folding ????", required = false)
 	static boolean folding = false;
 
 	private static Scanner scanner;
@@ -121,22 +128,30 @@ public class Compiler {
 	 */
 	public static void main(String[] args) {
 
-		if (args.length < 1) {
-			System.out.println("Usage: tc filename [-o=outputfilename] [tree] [folding]");
-			System.exit(1);
-		}
-		
-		parseArgs(args);
+		/*if (args.length < 1) {
+			System.out.println("Argument count: " + args.length);
+			for (int i = 0; i < args.length; i++) {
+				System.out.println("Argument " + i + ": " + args[i]);
+			}
+		}*/
+
+		String[] unparsed = Args.parseOrExit(Compiler.class, args).toArray(new String[3]);
+		/*System.out.println("That's the unparsed string:");
+		System.out.println("...............................................");
+		System.out.println(unparsed);
+		System.out.println("...............................................");
+		System.out.println("unparsed string end");
+		//parseArgs(unparsed);*/
 
 		String sourceName = args[0];
-		
+
 		var compiledOK = compileProgram(sourceName, objectName, showTree, false);
 
 		if (!showTree) {
 			System.exit(compiledOK ? 0 : 1);
 		}
 	}
-	
+	/*
 	private static void parseArgs(String[] args) {
 		for (String s : args) {
 			var sl = s.toLowerCase();
@@ -148,5 +163,5 @@ public class Compiler {
 				folding = true;
 			}
 		}
-	}
+	}*/
 }

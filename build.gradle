@@ -1,4 +1,20 @@
-apply plugin: 'java'
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.2"
+    classpath 'com.github.spullara.cli-parser:cli-parser:1.1.6'
+  }
+}
+
+plugins {
+  id 'java'
+  id 'application'
+  id "com.github.johnrengelman.shadow" version "5.1.0"
+}
 
 sourceCompatibility = 11
 
@@ -8,4 +24,44 @@ subprojects.each { subproject ->
 
 jar {
   from subprojects.sourceSets.main.output
+}
+
+repositories {
+  mavenCentral()
+  maven { url "https://jitpack.io" }
+}
+dependencies {
+  implementation group: 'com.github.spullara.cli-parser', name: 'cli-parser', version: '1.1.6'
+}
+
+mainClassName = "com.github.spullara.cli-parser"
+
+project ("Triangle.Compiler") {
+  repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+  }
+  dependencies {
+    implementation group: 'com.github.spullara.cli-parser', name: 'cli-parser', version: '1.1.6'
+    implementation project(':Triangle.AbstractMachine')
+  }
+}
+
+task copyAllDependencies(dependsOn: configurations.compileClasspath, type: Copy) {
+  from configurations.compileClasspath
+  //def confCPFile = (configurations.compileClasspath)
+  into "${buildDir}/cliFile"
+}
+build.dependsOn(copyAllDependencies)
+
+shadowJar {
+  include "$buildDir/cliFile"
+  include "cliFile"
+  baseName = 'com.sampullara.cli.Args'
+  version = project.version
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+  from sourceSets.test.output.classesDirs
+  mergeServiceFiles()
 }

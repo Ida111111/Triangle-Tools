@@ -4,11 +4,12 @@ apply plugin: 'application'
 sourceCompatibility = 11
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 
 dependencies {
+	implementation group: 'com.github.spullara.cli-parser', name: 'cli-parser', version: '1.1.6'
 	implementation project(':Triangle.AbstractMachine')
 	testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 }
